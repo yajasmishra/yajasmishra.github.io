@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yajas Mishra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:      #080C10;
+  --bg2:     #0D1117;
+  --bg3:     #161B22;
+  --cyan:    #00F5D4;
+  --red:     #FF4136;
+  --gold:    #FFD60A;
+  --white:   #E8EDF2;
+  --gray:    #8B949E;
+  --dgray:   #21262D;
+  --border:  rgba(0,245,212,0.15);
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-mono:    'Space Mono', monospace;
+  --font-body:    'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* ── CUSTOM CURSOR ────────────────────────────────────────── */
+.cursor {
+  position: fixed; top: 0; left: 0;
+  width: 12px; height: 12px;
+  background: var(--cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  position: fixed; top: 0; left: 0;
+  width: 36px; height: 36px;
+  border: 1px solid var(--cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease-out, opacity 0.2s;
+  opacity: 0.5;
+}
+body:hover .cursor { opacity: 1; }
+
+/* ── NOISE TEXTURE OVERLAY ────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.35;
+}
+
+/* ── NAV ──────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px;
+  background: rgba(8,12,16,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  color: var(--cyan);
+  text-decoration: none;
+}
+.nav-logo span { color: var(--white); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--gray);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 1px; background: var(--cyan);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.25s;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-status {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--gray);
+  display: flex; align-items: center; gap: 8px;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #39ff14;
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* ── SECTIONS GENERAL ─────────────────────────────────────── */
+section { padding: 100px 40px; max-width: 1200px; margin: 0 auto; }
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--cyan);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-tag::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 16px;
+  background: var(--cyan);
+}
+h2.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  margin-bottom: 48px;
+}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+#hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 120px 40px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--cyan);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 13rem);
+  line-height: 0.88;
+  letter-spacing: 0.01em;
+  color: var(--white);
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.35s both;
+}
+.hero-name .highlight { color: var(--cyan); }
+.hero-name .outline {
+  -webkit-text-stroke: 2px var(--white);
+  color: transparent;
+}
+
+.hero-sub {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-top: 28px;
+  max-width: 480px;
+  line-height: 1.8;
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.5s both;
+}
+
+.hero-tags {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 32px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.65s both;
+}
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 6px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  color: var(--gray);
+  letter-spacing: 0.08em;
+  transition: all 0.2s;
+}
+.tag:hover { border-color: var(--cyan); color: var(--cyan); }
+.tag.red { border-color: rgba(255,65,54,0.4); color: var(--red); }
+.tag.gold { border-color: rgba(255,214,10,0.4); color: var(--gold); }
+
+.hero-scroll {
+  position: absolute; bottom: 40px; left: 40px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--gray);
+  letter-spacing: 0.15em;
+  display: flex; align-items: center; gap: 12px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.9s both;
+}
+.hero-scroll::after {
+  content: '';
+  width: 40px; height: 1px;
+  background: var(--gray);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+@keyframes scrollLine { 0%,100%{width:40px} 50%{width:70px} }
+
+/* Big background text */
+.hero-bg-text {
+  position: absolute;
+  right: -20px; top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: 22vw;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(0,245,212,0.06);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ── ABOUT ────────────────────────────────────────────────── */
+#about { border-top: 1px solid var(--border); }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+.about-left p {
+  font-size: 1.05rem;
+  color: #9BA8B5;
+  line-height: 1.85;
+  margin-bottom: 20px;
+}
+.about-left p strong { color: var(--cyan); font-weight: 500; }
+
+.about-right { display: flex; flex-direction: column; gap: 16px; }
+
+.stat-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  display: flex; align-items: center; gap: 20px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.stat-card:hover { border-color: var(--cyan); transform: translateX(6px); }
+.stat-icon { font-size: 2rem; flex-shrink: 0; }
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--gray);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.stat-val {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--white);
+  letter-spacing: 0.05em;
+}
+
+/* ── PROJECTS ─────────────────────────────────────────────── */
+#projects { border-top: 1px solid var(--border); }
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+.proj-card {
+  background: var(--bg3);
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.proj-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--cyan);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.proj-card:hover::before { transform: scaleX(1); }
+.proj-card:hover { background: var(--dgray); }
+.proj-card.red-accent::before { background: var(--red); }
+.proj-card.gold-accent::before { background: var(--gold); }
+
+.proj-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+}
+.proj-icon { font-size: 2.2rem; margin-bottom: 16px; }
+.proj-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 10px;
+  line-height: 1;
+}
+.proj-desc {
+  font-size: 0.88rem;
+  color: var(--gray);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.proj-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+  margin-right: 6px;
+  margin-top: 4px;
+}
+.proj-tag.r { color: var(--red); border-color: rgba(255,65,54,0.3); }
+.proj-tag.g { color: var(--gold); border-color: rgba(255,214,10,0.3); }
+
+.proj-arrow {
+  position: absolute;
+  bottom: 28px; right: 28px;
+  font-size: 1.4rem;
+  color: var(--border);
+  transition: color 0.2s, transform 0.2s;
+}
+.proj-card:hover .proj-arrow { color: var(--cyan); transform: translate(4px, -4px); }
+.proj-card.red-accent:hover .proj-arrow { color: var(--red); }
+.proj-card.gold-accent:hover .proj-arrow { color: var(--gold); }
+
+/* Wide card */
+.proj-card.wide {
+  grid-column: span 2;
+}
+
+/* ── INTERESTS ────────────────────────────────────────────── */
+#interests { border-top: 1px solid var(--border); }
+
+.interests-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.interest-card {
+  background: var(--bg3);
+  padding: 40px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+.interest-card:hover { background: var(--dgray); }
+
+.interest-card::after {
+  content: attr(data-bg);
+  position: absolute;
+  bottom: -10px; right: -10px;
+  font-family: var(--font-display);
+  font-size: 6rem;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.04);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.interest-emoji { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+.interest-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+.interest-accent { display: block; width: 32px; height: 3px; margin-bottom: 14px; }
+.interest-desc {
+  font-size: 0.88rem;
+  color: var(--gray);
+  line-height: 1.75;
+}
+.interest-detail {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--gray);
+  opacity: 0.7;
+}
+
+/* ── ART GALLERY ──────────────────────────────────────────── */
+#art { border-top: 1px solid var(--border); }
+
+.gallery-note {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--gray);
+  margin-bottom: 40px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--cyan);
+  background: var(--bg3);
+  line-height: 1.7;
+}
+.gallery-note strong { color: var(--cyan); }
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+.gallery-slot {
+  aspect-ratio: 4/3;
+  background: var(--bg3);
+  border: 1px dashed rgba(0,245,212,0.2);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.gallery-slot:hover { background: var(--dgray); border-color: var(--cyan); }
+.gallery-slot-icon { font-size: 2.5rem; opacity: 0.3; }
+.gallery-slot-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.gallery-slot-num {
+  position: absolute;
+  top: 12px; left: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(0,245,212,0.3);
+}
+
+/* ── CONTACT / FOOTER ─────────────────────────────────────── */
+#contact {
+  border-top: 1px solid var(--border);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 40px 60px;
+}
+
+.contact-big {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 10vw, 9rem);
+  line-height: 0.9;
+  color: var(--white);
+  margin-bottom: 40px;
+}
+.contact-big span { color: var(--cyan); }
+
+.contact-links {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  margin-bottom: 80px;
+}
+.contact-link {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--gray);
+  text-decoration: none;
+  padding: 12px 24px;
+  border: 1px solid var(--border);
+  letter-spacing: 0.08em;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 10px;
+}
+.contact-link:hover { border-color: var(--cyan); color: var(--cyan); }
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+}
+.footer-copy {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--gray);
+}
+
+/* ── ANIMATIONS ───────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* Stagger children */
+.stagger > * { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.stagger.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:0s; }
+.stagger.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:0.08s; }
+.stagger.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:0.16s; }
+.stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.24s; }
+.stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.32s; }
+
+/* ── DIVIDER LINE ─────────────────────────────────────────── */
+.divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+  margin: 0 40px;
+  opacity: 0.3;
+}
+
+/* ── SCROLLBAR ────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 2px; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  section { padding: 70px 20px; }
+  #hero { padding: 100px 20px 60px; }
+  .hero-name { font-size: clamp(4rem, 18vw, 6rem); }
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .proj-card.wide { grid-column: span 1; }
+  .interests-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-bg-text { display: none; }
+  footer { flex-direction: column; gap: 10px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ── NAV ──────────────────────────────────────────────────── -->
+<nav>
+  <a href="#hero" class="nav-logo">Y<span>.</span>M</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#interests">Interests</a></li>
+    <li><a href="#art">Art</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    Class IX · India
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-bg-text">YM</div>
+
+  <p class="hero-eyebrow">// Hello, World — I'm</p>
+
+  <h1 class="hero-name">
+    <span class="highlight">Yajas</span><br>
+    <span class="outline">Mishra</span>
+  </h1>
+
+  <p class="hero-sub">
+    Student. Artist. Fighter. Musician.<br>
+    Class IX · CBSE · India<br>
+    Building things. Drawing things. Breaking things.
+  </p>
+
+  <div class="hero-tags">
+    <span class="tag">🎹 Keyboard</span>
+    <span class="tag red">🥊 Kickboxing</span>
+    <span class="tag gold">✏️ Comics & Sketching</span>
+    <span class="tag">💻 CS Projects</span>
+    <span class="tag">🔬 Biology</span>
+  </div>
+
+  <div class="hero-scroll">Scroll to explore</div>
+</section>
+
+<!-- ── ABOUT ─────────────────────────────────────────────────── -->
+<section id="about">
+  <p class="section-tag">01 // About Me</p>
+  <h2 class="section-title">Who I Am</h2>
+
+  <div class="about-grid reveal">
+    <div class="about-left">
+      <p>
+        I'm <strong>Yajas Mishra</strong>, a Class IX student from India with too many interests and not enough hours in the day. I sketch comic strips, train in kickboxing, learn keyboard, and somehow manage to build school projects that look nothing like school projects.
+      </p>
+      <p>
+        This site is my space — part portfolio, part creative dump, part proof that I actually did my homework. Everything you see here is made by me.
+      </p>
+      <p>
+        Currently learning: <strong>cyber security</strong>, <strong>cell biology</strong>, <strong>chord progressions</strong>, and how to land a proper roundhouse kick.
+      </p>
+    </div>
+    <div class="about-right stagger">
+      <div class="stat-card">
+        <div class="stat-icon">🎹</div>
+        <div>
+          <div class="stat-label">Currently Learning</div>
+          <div class="stat-val">Keyboard</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🥊</div>
+        <div>
+          <div class="stat-label">Combat Training</div>
+          <div class="stat-val">Kickboxing</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✏️</div>
+        <div>
+          <div class="stat-label">Creative Work</div>
+          <div class="stat-val">Comics & Art</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div>
+          <div class="stat-label">Currently In</div>
+          <div class="stat-val">Class IX · CBSE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ───────────────────────────────────────────────── -->
+<section id="projects">
+  <p class="section-tag">02 // School Projects</p>
+  <h2 class="section-title">The Lab</h2>
+
+  <div class="projects-grid stagger">
+
+    <a class="proj-card" href="mitosis.html">
+      <div class="proj-num">Project 01 // Biology · Class IX</div>
+      <div class="proj-icon">🧬</div>
+      <div class="proj-title">Mitosis Animation</div>
+      <div class="proj-desc">An interactive animated explainer of cell division — all 6 stages from Interphase to Cytokinesis. Click through each stage and watch the cell actually divide.</div>
+      <span class="proj-tag">HTML</span>
+      <span class="proj-tag">CSS Animation</span>
+      <span class="proj-tag">Biology</span>
+      <div class="proj-arrow">↗</div>
+    </a>
+
+    <a class="proj-card red-accent" href="cybersecurity.html">
+      <div class="proj-num">Project 02 // IT-402 · Class IX</div>
+      <div class="proj-icon">🔐</div>
+      <div class="proj-title">Cyber Security</div>
+      <div class="proj-desc">A full project on cyber security and cyber crimes — types of threats, attack methods, preventive measures, and 3 real-life case studies including AIIMS Delhi and WannaCry.</div>
+      <span class="proj-tag r">PowerPoint</span>
+      <span class="proj-tag r">IT-402</span>
+      <span class="proj-tag r">Case Studies</span>
+      <div class="proj-arrow">↗</div>
+    </a>
+
+    <div class="proj-card wide gold-accent" style="opacity:0.5; cursor:default;">
+      <div class="proj-num">Project 03 // Coming Soon</div>
+      <div class="proj-icon">⚗️</div>
+      <div class="proj-title">Next Project</div>
+      <div class="proj-desc">This slot is waiting for the next big thing. More projects added as the year goes on.</div>
+      <span class="proj-tag g">In Progress</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── INTERESTS ──────────────────────────────────────────────── -->
+<section id="interests">
+  <p class="section-tag">03 // What I Do</p>
+  <h2 class="section-title">Beyond School</h2>
+
+  <div class="interests-grid stagger">
+
+    <div class="interest-card" data-bg="KEYS">
+      <span class="interest-emoji">🎹</span>
+      <div class="interest-title">Keyboard</div>
+      <span class="interest-accent" style="background:var(--cyan)"></span>
+      <div class="interest-desc">Learning to play keyboard — working through scales, chords, and eventually songs. Music is the one thing that requires zero words.</div>
+      <div class="interest-detail">// Currently: Learning chords & melodies</div>
+    </div>
+
+    <div class="interest-card" data-bg="KICK">
+      <span class="interest-emoji">🥊</span>
+      <div class="interest-title">Kickboxing</div>
+      <span class="interest-accent" style="background:var(--red)"></span>
+      <div class="interest-desc">Training in kickboxing — combinations, footwork, conditioning. It clears the head better than anything else. Also, yes, it's as hard as it looks.</div>
+      <div class="interest-detail">// Currently: Combinations & footwork</div>
+    </div>
+
+    <div class="interest-card" data-bg="ART">
+      <span class="interest-emoji">✏️</span>
+      <div class="interest-title">Comics & Art</div>
+      <span class="interest-accent" style="background:var(--gold)"></span>
+      <div class="interest-desc">Sketching characters, panels, stories. Comic strips are my favourite — building a whole world in four boxes. Still figuring out my style.</div>
+      <div class="interest-detail">// Currently: Character design & strips</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ART GALLERY ────────────────────────────────────────────── -->
+<section id="art">
+  <p class="section-tag">04 // Creative Work</p>
+  <h2 class="section-title">Sketchbook</h2>
+
+  <div class="gallery-note reveal">
+    <strong>Hey Yajas</strong> — this is your art gallery. Replace the placeholder boxes below with your actual sketches and comic strips. Just save your drawings as image files (JPG or PNG) and drop them in this folder. Each box is a slot waiting for your work. The more you fill it, the cooler it looks. 🎨
+  </div>
+
+  <div class="gallery-grid stagger">
+    <div class="gallery-slot">
+      <div class="gallery-slot-num">01</div>
+      <div class="gallery-slot-icon">🖼️</div>
+      <div class="gallery-slot-label">Your sketch here</div>
+    </div>
+    <div class="gallery-slot">
+      <div class="gallery-slot-num">02</div>
+      <div class="gallery-slot-icon">📖</div>
+      <div class="gallery-slot-label">Comic strip here</div>
+    </div>
+    <div class="gallery-slot">
+      <div class="gallery-slot-num">03</div>
+      <div class="gallery-slot-icon">🖼️</div>
+      <div class="gallery-slot-label">Your sketch here</div>
+    </div>
+    <div class="gallery-slot">
+      <div class="gallery-slot-num">04</div>
+      <div class="gallery-slot-icon">📖</div>
+      <div class="gallery-slot-label">Comic strip here</div>
+    </div>
+    <div class="gallery-slot">
+      <div class="gallery-slot-num">05</div>
+      <div class="gallery-slot-icon">🖼️</div>
+      <div class="gallery-slot-label">Your sketch here</div>
+    </div>
+    <div class="gallery-slot">
+      <div class="gallery-slot-num">06</div>
+      <div class="gallery-slot-icon">✨</div>
+      <div class="gallery-slot-label">Something new</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ────────────────────────────────────────────────── -->
+<section id="contact">
+  <p class="section-tag">05 // Find Me</p>
+  <div class="contact-big reveal">
+    Let's<br><span>Connect</span>
+  </div>
+  <div class="contact-links">
+    <a class="contact-link" href="https://github.com/" target="_blank">⌥ GitHub</a>
+    <a class="contact-link" href="mailto:">✉ Email</a>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-name">Yajas Mishra</div>
+  <div class="footer-copy">// Class IX · CBSE · India · 2025–26</div>
+  <div class="footer-copy">Built from scratch. No templates.</div>
+</footer>
+
+<script>
+// ── Custom cursor ────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top  = my + 'px';
+});
+
+(function animateRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateRing);
+})();
+
+document.querySelectorAll('a, button, .proj-card, .gallery-slot, .stat-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+    ring.style.opacity = '0.15';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+    ring.style.opacity = '0.5';
+  });
+});
+
+// ── Scroll reveal ────────────────────────────────────────────
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal, .stagger').forEach(el => obs.observe(el));
+
+// ── Active nav on scroll ─────────────────────────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--cyan)' : '';
+  });
+});
+
+// ── Gallery slot click hint ──────────────────────────────────
+document.querySelectorAll('.gallery-slot').forEach(slot => {
+  slot.addEventListener('click', () => {
+    slot.innerHTML = `
+      <div class="gallery-slot-num" style="position:absolute;top:12px;left:14px;font-family:'Space Mono',monospace;font-size:0.6rem;color:rgba(0,245,212,0.3)">${slot.querySelector('.gallery-slot-num').textContent}</div>
+      <div style="font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--cyan);text-align:center;padding:20px">
+        Replace this slot in the<br>HTML file with:<br><br>
+        <code style="color:var(--gold);font-size:0.65rem">&lt;img src="your-art.jpg"&gt;</code>
+      </div>`;
+  });
+});
+</script>
+</body>
+</html>
